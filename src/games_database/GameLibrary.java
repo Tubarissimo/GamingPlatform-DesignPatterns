@@ -1,12 +1,13 @@
-package application;
+package games_database;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
-
+import user.*;
 
 public class GameLibrary {
     private ArrayList<Game> gameList;
+    private Scanner in = new Scanner(System.in);
 
     public GameLibrary()
     {
@@ -18,7 +19,7 @@ public class GameLibrary {
         return gameList;
     }
 
-    public void buyGameSimple(User user, int indexGame)
+    public void buyGameSimple(AbstractUser user, int indexGame)
     {
         if (user.getOwnedGames().getGameList().contains(gameList.get(indexGame))) 
         {
@@ -32,10 +33,10 @@ public class GameLibrary {
         }
     }
 
-    public void buyGame(User user)
+    public void buyGame(AbstractUser user)
     {
         int indexGame = -1;
-        Scanner in = new Scanner(System.in);
+
         try {
             System.out.println("You have R$" + user.getCredits());
             System.out.println("\nType the number of the game wich you wanna buy: ");
@@ -92,10 +93,10 @@ public class GameLibrary {
 
     }
 
-    public void inGamePurchases(User user)
+    public void inGamePurchases(AbstractUser user)
     {
         int indexGame = -1;
-        Scanner in = new Scanner(System.in);
+
         try {
             System.out.println("You have R$" + user.getCredits());
             System.out.println("\nType the number of the game wich you wanna buy skins or gamepass: ");
@@ -145,7 +146,6 @@ public class GameLibrary {
     {
         int indexGame = -1;
         Random random = new Random();
-        Scanner in = new Scanner(System.in);
 
         try {
             System.out.println("\nType the number of the game wich you wanna check out about new patches or updates: ");

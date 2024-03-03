@@ -1,44 +1,32 @@
-package application;
+package user_database;
 
-import java.util.ArrayList;
 import java.util.Scanner;
+import games_database.*;
+import user.*;
+import user_database.UserFactory.UserType;
 
 public class CreatorDatabase extends AbstractDatabase{
-    private ArrayList<Creator> creatorList;
-    private Creator connectedUser;
     private Scanner in = new Scanner(System.in);
-
-    public CreatorDatabase()
-    {
-        this.creatorList = new ArrayList<>();
-        this.connectedUser = null;
-    }
-
-    // getters
-    public ArrayList<Creator> getCreatorList() {
-        return creatorList;
-    }
-    public Creator getConnectedUser() {
-        return connectedUser;
-    }
-
-    // setters
-    public void setConnectedUser(Creator connectedUser) {
-        this.connectedUser = connectedUser;
-    }
 
     @Override
     public void registerUser()
     {
-        Creator newUser = new Creator(null, null, null, 0);
-
+        AbstractUser newUser = UserFactory.createUser(UserType.CREATOR);
         try {
             System.out.println("Type your e-mail adress: ");
             newUser.setEmail(in.nextLine());
+            if (userExists(newUser.getEmail()) != null) {
+                System.out.println("This e-mail is already in use, choose other");
+                return;
+            }
             System.out.println("Type your password: ");
             newUser.setPassword(in.nextLine());
             System.out.println("Type your user nickname: ");
             newUser.setNickname(in.nextLine());
+            if (userExists(newUser.getNickname()) != null) {
+                System.out.println("This nickname is already in use, choose other");
+                return;
+            }
             System.out.println("How old are you: ");
             newUser.setAge(in.nextInt());
             
@@ -48,42 +36,17 @@ public class CreatorDatabase extends AbstractDatabase{
                 return;
             }
 
-            creatorList.add(newUser);
+            userList.add(newUser);
             System.out.println("New creator created successfully!\n");
+        } catch (Exception e) {
+            System.out.println("An error occured during the registration...");
         }
-        catch (java.util.InputMismatchException e) 
-        {
-            System.out.println("Invalid input.");
-        } 
-        catch (java.util.NoSuchElementException e) 
-        {
-            System.out.println("Error reading input. Please try again.");
-        }
-    }
 
-    public Creator validateUser(String email, String password) {
-        for (Creator user : creatorList) {
-            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public Creator searchUser(String nickname) {
-        for (Creator user : creatorList) {
-            if (user.getNickname().equals(nickname)) {
-                return user;
-            }
-        }
-        return null;
     }
 
     @Override
     public void login()
     {
-        Scanner in = new Scanner(System.in);
-
         try {
             System.out.println("Type your e-mail adress: ");
             String emailString = in.nextLine();
@@ -110,10 +73,8 @@ public class CreatorDatabase extends AbstractDatabase{
         setConnectedUser(null);
     }
 
-    public void createGame(Creator connectedCreator,GameLibrary gameLibrary)
+    public void createGame(AbstractUser connectedCreator,GameLibrary gameLibrary)
     {
-        Scanner in = new Scanner(System.in);
-
         try {
             Game newGame = new Game(null, 0);
 
@@ -131,7 +92,7 @@ public class CreatorDatabase extends AbstractDatabase{
         }
     }
 
-    public void showCreatedGames(Creator connectedCreator)
+    public void showCreatedGames(AbstractUser connectedCreator)
     {
         if (connectedCreator.getCreatedGames() == null)
         {
@@ -139,16 +100,5 @@ public class CreatorDatabase extends AbstractDatabase{
             return;
         }
         System.out.println(connectedCreator.getCreatedGames());
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder userString = new StringBuilder();
-
-        for (Creator user : creatorList) {
-            userString.append(user);
-        }
-
-        return userString.toString();
     }
 }

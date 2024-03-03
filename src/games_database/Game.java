@@ -1,4 +1,4 @@
-package application;
+package games_database;
 
 public class Game {
     private String name;

@@ -1,46 +1,33 @@
-package application;
+package user_database;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Collections;
 import java.util.Comparator;
-
+import user_database.UserFactory.UserType;
+import user.*;
 
 public class UserDatabase extends AbstractDatabase{
-    private ArrayList<User> userList;
-    private User connectedUser;
-
-    public UserDatabase()
-    {
-        this.userList = new ArrayList<>();
-        this.connectedUser = null;
-    }
-
-    // getters
-    public ArrayList<User> getUserList() {
-        return userList;
-    }
-    public User getConnectedUser() {
-        return connectedUser;
-    }
-
-    // setters
-    public void setConnectedUser(User connectedUser) {
-        this.connectedUser = connectedUser;
-    }
-
+    private Scanner in = new Scanner(System.in);
+    
     @Override
     public void registerUser()
     {
-        User newUser = new User(null, null, null, 0, 0, 0);
-        Scanner in = new Scanner(System.in);
+        AbstractUser newUser = UserFactory.createUser(UserType.USER);
         try {
             System.out.println("Type your e-mail adress: ");
             newUser.setEmail(in.nextLine());
+            if (userExists(newUser.getEmail()) != null) {
+                System.out.println("This e-mail is already in use, choose other");
+                return;
+            }
             System.out.println("Type your password: ");
             newUser.setPassword(in.nextLine());
             System.out.println("Type your user nickname: ");
             newUser.setNickname(in.nextLine());
+            if (userExists(newUser.getNickname()) != null) {
+                System.out.println("This nickname is already in use, choose other");
+                return;
+            }
             System.out.println("How old are you: ");
             newUser.setAge(in.nextInt());
             userList.add(newUser);
@@ -51,29 +38,9 @@ public class UserDatabase extends AbstractDatabase{
         }
     }
 
-    public User validateUser(String email, String password) {
-        for (User user : userList) {
-            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public User searchUser(String nickname) {
-        for (User user : userList) {
-            if (user.getNickname().equals(nickname)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void login()
     {
-        Scanner in = new Scanner(System.in);
-
         try {
             System.out.println("Type your e-mail adress: ");
             String emailString = in.nextLine();
@@ -97,8 +64,6 @@ public class UserDatabase extends AbstractDatabase{
 
     public void depositCredits()
     {
-        Scanner in = new Scanner(System.in);
-
         try {
             if (this.getConnectedUser().getAge() < 18)
             {
@@ -118,7 +83,6 @@ public class UserDatabase extends AbstractDatabase{
         } catch (Exception e) {
             System.out.println("An error occurred during the deposit...");
         }
-
     }
 
     @Override
@@ -129,24 +93,24 @@ public class UserDatabase extends AbstractDatabase{
 
     public void ranking()
     {
-        Collections.sort(userList, Comparator.comparingInt(User::getScore).reversed());
+        Collections.sort(userList, Comparator.comparingInt(AbstractUser::getScore).reversed());
 
         int rankRange = Math.min(10, userList.size());
         System.out.println("\tTop users from Sharkbyte\n");
         for (int i = 0; i < rankRange; i++) {
-            User user = userList.get(i);
+            AbstractUser user = userList.get(i);
             System.out.println("\t" + (i + 1) + " >> " + user.getNickname() + ": " + user.getScore() + " points");
         }
         System.out.println();
     }
 
-    public User findMatch(User currentUser) {
+    public AbstractUser findMatch(AbstractUser currentUser) {
         int targetScore = currentUser.getScore();
-        User bestMatch = null;
+        AbstractUser bestMatch = null;
         int minScoreDifference = Integer.MAX_VALUE;
 
-        for (User user : userList) {
-            if (!user.getNickname().equals(currentUser.getNickname())) {
+        for (AbstractUser user : userList) {
+            if (!user.getNickname().equals(currentUser.getNickname()) && user.getScore() > 0) {
                 int scoreDifference = Math.abs(targetScore - user.getScore());
 
                 if (scoreDifference < minScoreDifference) {
@@ -159,10 +123,8 @@ public class UserDatabase extends AbstractDatabase{
         return bestMatch;
     }
 
-    public void sendMessage(User user)
+    public void sendMessage(AbstractUser user)
     {
-        Scanner in = new Scanner(System.in);
-
         try {
             System.out.println("Write the nickname of the user you wanna chat: ");
             String searchedUser = in.nextLine();
@@ -191,7 +153,7 @@ public class UserDatabase extends AbstractDatabase{
 
     }
 
-    public String showSentMessages(User user)
+    public String showSentMessages(AbstractUser user)
     {
         StringBuilder messageString = new StringBuilder();
 
@@ -209,7 +171,7 @@ public class UserDatabase extends AbstractDatabase{
         }
     }
 
-    public String showReceivedMessages(User user)
+    public String showReceivedMessages(AbstractUser user)
     {
         StringBuilder messageString = new StringBuilder();
 
@@ -226,16 +188,4 @@ public class UserDatabase extends AbstractDatabase{
             return messageString.toString();
         }
     }
-
-    @Override
-    public String toString() {
-        StringBuilder userString = new StringBuilder();
-
-        for (User user : userList) {
-            userString.append(user);
-        }
-
-        return userString.toString();
-    }
-
 }

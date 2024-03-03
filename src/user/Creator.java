@@ -1,35 +1,17 @@
-package application;
+package user;
+
+import games_database.*;
 
 public class Creator extends AbstractUser {
-    private GameLibrary createdGames;
 
+    public Creator(String email, String password, String nickname, int age, int score, double credits) {
+        super(email, password, nickname, age, score, credits);
+    }
+    
+    @Override
+    public void updateScore() {}
 
-    public Creator(String email,String password,String nickname,int age)
-    {
-        super(email,password,nickname,age);
-
-        this.createdGames = new GameLibrary();
-    }
-
-    // GETTERS
-    public GameLibrary getCreatedGames() {
-        return createdGames;
-    }
-
-    // SETTERS
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-    public void setAge(int age) {
-        this.age = age;
-    }
-
+    @Override
     public String showLibrary()
     {
         StringBuilder gameString = new StringBuilder();
@@ -52,4 +34,5 @@ public class Creator extends AbstractUser {
                 "CONTACT: " + this.email + "\n\n" +
                 "\n\n";
     }
+
 }

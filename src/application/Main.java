@@ -5,16 +5,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
-
+import games_database.*;
+import user_database.*;
+import user_database.UserFactory.UserType;
+import user.*;
+import banco_de_dados.*;
 
 public class Main {
     public static void main(String[] args) {
         GameLibrary gameLibrary = new GameLibrary();
         UserDatabase userDatabase = new UserDatabase();
         CreatorDatabase creatorDatabase = new CreatorDatabase();
-        String fileGameList = "src\\application\\gamelist.txt"; 
-        String fileUserDataBase = "src\\application\\userdatabase.txt";
-        String fileCreatorDatabase = "src\\application\\creatordatabase.txt";
+        String fileGameList = "src/banco_de_dados/gamelist.txt"; 
+        String fileUserDataBase = "src/banco_de_dados/userdatabase.txt";
+        String fileCreatorDatabase = "src/banco_de_dados/creatordatabase.txt";
         int option = -1;
 
 
@@ -49,7 +53,13 @@ public class Main {
                 Random random = new Random();
                 String[] dataStrings = line.split(" ");
 
-                User newUser = new User(dataStrings[0], dataStrings[1], dataStrings[2],random.nextInt(25) + 14, 0, Double.parseDouble(dataStrings[3]));
+                AbstractUser newUser = UserFactory.createUser(UserType.USER);
+                newUser.setEmail(dataStrings[0]);
+                newUser.setPassword(dataStrings[1]);
+                newUser.setNickname(dataStrings[2]);
+                newUser.setAge(random.nextInt(25) + 14);
+                newUser.setScore(0);
+                newUser.setCredits(Double.parseDouble(dataStrings[3]));
                 
                 for (int i = 0; i < 30; i++) {
                     gameLibrary.buyGameSimple(newUser, random.nextInt(99) + 1);
@@ -75,9 +85,15 @@ public class Main {
             {
                 String[] dataStrings = line.split(" ");
 
-                Creator newUser = new Creator(dataStrings[0], dataStrings[1], dataStrings[2],Integer.parseInt(dataStrings[3]));
+                AbstractUser newUser = UserFactory.createUser(UserType.USER);
+                newUser.setEmail(dataStrings[0]);
+                newUser.setPassword(dataStrings[1]);
+                newUser.setNickname(dataStrings[2]);
+                newUser.setAge(Integer.parseInt(dataStrings[3]));
+                newUser.setScore(0);
+                newUser.setCredits(0);
 
-                creatorDatabase.getCreatorList().add(newUser);
+                creatorDatabase.getUserList().add(newUser);
                 
                 line = creatorReader.readLine();
             }
@@ -89,7 +105,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         do
         {
-            for (User user : userDatabase.getUserList()) {
+            for (AbstractUser user : userDatabase.getUserList()) {
                 user.updateScore();
             }
             if (userDatabase.getConnectedUser() == null && creatorDatabase.getConnectedUser() == null)
