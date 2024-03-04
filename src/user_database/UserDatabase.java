@@ -1,6 +1,9 @@
 package user_database;
 
 import java.util.Scanner;
+
+import games_database.GameLibrary;
+
 import java.util.Collections;
 import java.util.Comparator;
 import user_database.UserFactory.UserType;
@@ -14,6 +17,7 @@ public class UserDatabase extends AbstractDatabase{
     {
         AbstractUser newUser = UserFactory.createUser(UserType.USER);
         try {
+            in.nextLine();
             System.out.println("Type your e-mail adress: ");
             newUser.setEmail(in.nextLine());
             if (userExists(newUser.getEmail()) != null) {
@@ -41,6 +45,7 @@ public class UserDatabase extends AbstractDatabase{
     @Override
     public void login()
     {
+        in.nextLine();
         try {
             System.out.println("Type your e-mail adress: ");
             String emailString = in.nextLine();
@@ -62,8 +67,10 @@ public class UserDatabase extends AbstractDatabase{
         } 
     }
 
+    @Override
     public void depositCredits()
     {
+        in.nextLine();
         try {
             if (this.getConnectedUser().getAge() < 18)
             {
@@ -91,6 +98,7 @@ public class UserDatabase extends AbstractDatabase{
         setConnectedUser(null);
     }
 
+    @Override
     public void ranking()
     {
         Collections.sort(userList, Comparator.comparingInt(AbstractUser::getScore).reversed());
@@ -104,13 +112,14 @@ public class UserDatabase extends AbstractDatabase{
         System.out.println();
     }
 
-    public AbstractUser findMatch(AbstractUser currentUser) {
-        int targetScore = currentUser.getScore();
+    @Override
+    public AbstractUser findMatch() {
+        int targetScore = connectedUser.getScore();
         AbstractUser bestMatch = null;
         int minScoreDifference = Integer.MAX_VALUE;
 
         for (AbstractUser user : userList) {
-            if (!user.getNickname().equals(currentUser.getNickname()) && user.getScore() > 0) {
+            if (!user.getNickname().equals(connectedUser.getNickname()) && user.getScore() > 0) {
                 int scoreDifference = Math.abs(targetScore - user.getScore());
 
                 if (scoreDifference < minScoreDifference) {
@@ -123,69 +132,6 @@ public class UserDatabase extends AbstractDatabase{
         return bestMatch;
     }
 
-    public void sendMessage(AbstractUser user)
-    {
-        try {
-            System.out.println("Write the nickname of the user you wanna chat: ");
-            String searchedUser = in.nextLine();
-    
-            if (searchUser(searchedUser) == null)
-            {
-                System.out.println("User not found\n");
-                return;
-            }
-    
-            System.out.println("Type the message tou wanna send to this user: ");
-            String message = in.nextLine();
-    
-            StringBuilder messageBuilder = new StringBuilder();
-    
-            messageBuilder.append("\n\t[ ").append(getConnectedUser().getNickname()).append(" ]\n").append(message).append("\n\n");
-    
-            user.getSentChatMessages().add(messageBuilder.toString());
-            searchUser(searchedUser).getReceivedChatMessages().add(messageBuilder.toString());
-    
-            System.out.println("Message sent succesfully\n");
-            
-        } catch (Exception e) {
-            System.out.println("An error occurred during message sending...");
-        } 
-
-    }
-
-    public String showSentMessages(AbstractUser user)
-    {
-        StringBuilder messageString = new StringBuilder();
-
-        if (user.getSentChatMessages().isEmpty() == true)
-        {
-            return "You have no sent messages\n";
-        }
-        else
-        {
-            for (String message : user.getSentChatMessages()) {
-                messageString.append(message);
-            }
-            
-            return messageString.toString();
-        }
-    }
-
-    public String showReceivedMessages(AbstractUser user)
-    {
-        StringBuilder messageString = new StringBuilder();
-
-        if (user.getReceivedChatMessages().isEmpty() == true)
-        {
-            return "You have no messages\n";
-        }
-        else
-        {
-            for (String message : user.getReceivedChatMessages()) {
-                messageString.append(message);
-            }
-            
-            return messageString.toString();
-        }
-    }
+    @Override
+    public void createGame(GameLibrary gameLibrary){}
 }

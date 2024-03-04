@@ -11,6 +11,7 @@ public class CreatorDatabase extends AbstractDatabase{
     @Override
     public void registerUser()
     {
+        in.nextLine();
         AbstractUser newUser = UserFactory.createUser(UserType.CREATOR);
         try {
             System.out.println("Type your e-mail adress: ");
@@ -47,6 +48,7 @@ public class CreatorDatabase extends AbstractDatabase{
     @Override
     public void login()
     {
+        in.nextLine();
         try {
             System.out.println("Type your e-mail adress: ");
             String emailString = in.nextLine();
@@ -73,8 +75,10 @@ public class CreatorDatabase extends AbstractDatabase{
         setConnectedUser(null);
     }
 
-    public void createGame(AbstractUser connectedCreator,GameLibrary gameLibrary)
+    @Override
+    public void createGame(GameLibrary gameLibrary)
     {
+        in.nextLine();
         try {
             Game newGame = new Game(null, 0);
 
@@ -84,7 +88,7 @@ public class CreatorDatabase extends AbstractDatabase{
             newGame.setPrice(in.nextInt());
 
             gameLibrary.getGameList().add(newGame);
-            connectedCreator.getCreatedGames().getGameList().add(newGame);
+            connectedUser.getCreatedGames().getGameList().add(newGame);
             System.out.println("Game published succesfully!\n");
             return;
         } catch (Exception e) {
@@ -100,5 +104,16 @@ public class CreatorDatabase extends AbstractDatabase{
             return;
         }
         System.out.println(connectedCreator.getCreatedGames());
+    }
+
+    @Override
+    public void ranking(){}
+
+    @Override
+    public void depositCredits(){}
+
+    @Override
+    public AbstractUser findMatch() {
+        return connectedUser;
     }
 }
