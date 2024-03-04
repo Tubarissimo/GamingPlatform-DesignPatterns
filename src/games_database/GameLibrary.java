@@ -35,6 +35,7 @@ public class GameLibrary {
 
     public void buyGame(AbstractUser user)
     {
+        in.nextLine();
         int indexGame = -1;
 
         try {
@@ -95,6 +96,7 @@ public class GameLibrary {
 
     public void inGamePurchases(AbstractUser user)
     {
+        in.nextLine();
         int indexGame = -1;
 
         try {
@@ -144,6 +146,7 @@ public class GameLibrary {
 
     public void updatesAndPatches()
     {
+        in.nextLine();
         int indexGame = -1;
         Random random = new Random();
 
